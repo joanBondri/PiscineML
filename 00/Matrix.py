@@ -1,3 +1,4 @@
+from Vector import Vector
 
 class Matrix :
 	def __init__(self, arg):
@@ -46,4 +47,22 @@ class Matrix :
 	def __rtruediv__(self, arg):
 		return self.__truediv__(arg)
 	
+	def __mul__(self, arg):
+		if (isinstance(arg, (int, float))):
+			res = [[self.data[row][column] * arg for column in range(len(self.data[row]))] for row in range(len(self.data))]
+			return Matrix(res)
+		if (isinstance(arg, Vector)):
+			if (arg.shape[0] != self.shape[0] or arg.shape[1] != self.shape[1]):
+				raise ValueError("Error: different shape")
+				
+		if (isinstance(arg, Matrix)):
+			if (arg.shape != self.shape):
+				raise ValueError("Error: different shape")
+			res = [[self.data[row][column] * arg[row][column] for column in range(len(self.data[row]))] for row in range(len(self.data))]
+			return Matrix(res)
 
+
+	def __str__(self):
+		return "Matrix(" + str(self.data) + ")"
+	def __repr__(self):
+		return (self.shape, self.data)
