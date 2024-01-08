@@ -1,5 +1,5 @@
 import numpy as np
-from tools import is_column_vector, add_intercept, transform_row_vector_to_column_vector
+from tools import is_column_vector, transform_row_vector_to_column_vector, add_intercept
 
 class MyLinearRegression():
     def __init__(self, theta):
@@ -11,11 +11,31 @@ class MyLinearRegression():
             self.theta = np.array(theta_temp)
 
     def predict_(self, X):
-        if self.theta.size == 0 or not isinstance(X, np.ndarray) or X.ndim != 2 or X.shape[1] + 1 != self.theta.shape[0]:
+        if self.theta.size == 0 or not isinstance(X, np.ndarray) or X.ndim != 2 or X.shape[1] != self.theta.shape[0]:
+            print(f"Xshape = {X.shape}")
+            print(f"theta = {self.theta.shape}")
             print("Incompatible dimension match between X and theta.")
             return
-        interceptingX = add_intercept(X)
-        return interceptingX @ self.theta
+        return X @ self.theta
+
+    def normalize(self, X):
+        X_no_intercept = X[:,1:]
+        std = np.std(X_no_intercept, axis=0)
+        mean = np.mean(X_no_intercept, axis=0)
+        print(f"std = {std} and mean = {mean}")
+        X_normalized = (X_no_intercept - mean) / std
+        return add_intercept(X_normalized)
+    
+    def adjust_theta_after_normal_(self, X):
+        X_no_intercept = X[:,1:]
+        mean_X = np.mean(X_no_intercept, axis=0)
+        std_X = np.std(X_no_intercept, axis=0)
+        print(f"std = {std_X} and mean = {mean_X}")
+        tt = self.theta.T[0]
+        tt_cpy = tt
+        tt[1:] = tt[1:] * std_X
+        tt[0] = tt_cpy[0] - np.sum((mean_X / std_X) * tt_cpy[1:])
+        self.theta = transform_row_vector_to_column_vector(tt)
 
     def cost_elem_(self, X, Y):
         prediction = self.predict_(X)
@@ -32,17 +52,22 @@ class MyLinearRegression():
     
     def calcule_derivative(self, x, y):
         prediction = self.predict_(x)
-        x_intercept = add_intercept(x)
-        if prediction is None or x_intercept is None or not is_column_vector(y) or x.shape[0] != y.shape[0] :
+        if prediction is None or not is_column_vector(y) or x.shape[0] != y.shape[0] :
             return
         diff = prediction - y
-        derivative_sum = np.sum((diff * x_intercept) / len(y), axis=0)
+        derivative_sum = np.sum((diff * x) / len(y), axis=0)
         return transform_row_vector_to_column_vector(derivative_sum)
 
     def fit_(self, x, y, alpha=.1, n_cycle=10000):
+        X_normalize = self.normalize(x)
+        # X_normalize = x
         for i in range(n_cycle):
-            res = self.calcule_derivative(x, y)
+            if i % 10000 == 0 :
+                print(f"iteration {i}th => costfunction = {self.cost_(X_normalize, y)}")
+            res = self.calcule_derivative(X_normalize, y)
             if (res is None):
                 return
             self.theta -= alpha * res
+        self.adjust_theta_after_normal_(x)
+        print(f"theta = {self.theta}")
         return self.theta

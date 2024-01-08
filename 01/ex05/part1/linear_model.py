@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from mylinearregression import MyLinearRegression as MLR
 
 def plot_basic_linear_regression(theta, X, Y, title="title", x_axis="x_axis", y_axis="y_axis"):
-    alpha = 10.0
+    alpha = 100.0
     res = 1
     while res > 0:
         alpha /= 10
@@ -17,8 +17,9 @@ def plot_basic_linear_regression(theta, X, Y, title="title", x_axis="x_axis", y_
             print(f"souci, cost = {cost}, res = {res}")
             return
         res = mlr_temp.cost_(X, Y) - res
+        print(f"res = {res}")
     mlr = MLR(theta)
-    mlr.fit_(X, Y, alpha=alpha, n_cycle=1000000)
+    mlr.fit_(X, Y, alpha=alpha, n_cycle=100000)
     data_x = X[:,1]
     plt.scatter(data_x, Y, color="green")
     plt.scatter(data_x, mlr.predict_(X), color="red")
