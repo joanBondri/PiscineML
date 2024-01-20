@@ -21,6 +21,8 @@ print(yop.var(array))
 print(yop.std(array))
 print(yop.quartile(array))
 
+print(yop.percentile([1, 3, 23, 45, 67, 78, 89], 51))
+
 a = [1, 42, 300, 10, 59]
 print("mmh1")
 print(TinyStatistician().mean(a))

@@ -17,7 +17,11 @@ class TinyStatistician :
 		return self.percentile(arr, 50)
 
 	def quartile(self, arr):
-		return [self.percentile(arr, 25), self.percentile(arr, 75)]
+		p1 = self.percentile(arr, 25)
+		p2 = self.percentile(arr, 75)
+		if (p1 == None or p2 == None):
+			return None
+		return [p1, p2]
 
 	def percentile (self, arrDisorder, p : int):
 		if (isinstance(arrDisorder, list)):
@@ -34,7 +38,6 @@ class TinyStatistician :
 		percentilePosition = (p / 100) * (lenArr - 1)
 		decimal = percentilePosition - math.floor(percentilePosition)
 		lowerValue = arr[int(percentilePosition - decimal)]
-		# print(f"lowervalue : {lowerValue}")
 		if (decimal == 0.0):
 			return lowerValue
 		return lowerValue + decimal * (arr[int(percentilePosition - decimal) + 1] - lowerValue)
