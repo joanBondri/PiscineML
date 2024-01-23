@@ -88,7 +88,8 @@ class Matrix :
 	def __rtruediv__(self, arg):
 		if (not isinstance(arg, (int, float))):
 			raise ValueError("Error: Invalid arg")
-		if (any([[self.data[row][column] == 0 for column in range(len(self.data[row]))] for row in range(len(self.data))])):
+		control = [any([self.data[row][column] == 0 for column in range(len(self.data[row]))]) for row in range(len(self.data))]
+		if (any(control)):
 			raise ValueError("Error: division by zero")
 		res = [[arg / self.data[row][column] for column in range(len(self.data[row]))] for row in range(len(self.data))]
 		return Matrix(res)
@@ -117,27 +118,7 @@ class Matrix :
 		raise ValueError("Error: Invalid arg")
 
 	def __rmul__(self, arg):
-		if (isinstance(arg, (int, float))):
-			res = [[self.data[row][column] * arg for column in range(len(self.data[row]))] for row in range(len(self.data))]
-			return Matrix(res)
-		if (isinstance(arg, Matrix)):
-			if (self.shape[1] != arg.shape[0]):
-				raise ValueError("Error: shapes not multiplicative")
-			len_adding = self.shape[1]
-			res = [[0] * arg.shape[1] for _ in range(self.shape[0])]
-			for i in range(self.shape[0]):
-				for j in range(arg.shape[1]):
-					for n in range(len_adding):
-						res[i][j] += self.data[i][n] * arg.data[n][j]
-			return Matrix(res)
-		elif isinstance(arg, Vector):
-			if self.shape[1] == arg.shape[0]:
-				res = Vector(arg.shape)
-				for ii in range(self.shape[0]):
-					for jj in range(self.shape[1]):
-						res.data[ii][0] = self.data[ii][jj] * arg[jj][0]
-				return res
-		raise ValueError("Error: Invalid arg")
+		return self.__mul__(arg)
 
 	def __getitem__(self, index):
 		return self.data[index]
@@ -181,8 +162,7 @@ class Vector(Matrix):
 			raise TypeError("Wrong argument")
 		res = 0
 		for ii in range(self.shape[1]):
-			print(f'self.shape[1] = {range(self.shape[1])}, add = {self.data[ii][0]}, add = {v.data[ii][0]}')
-			res += self.data[ii][0] * v.data[ii][0]
+			res += self.data[0][ii] * v.data[0][ii]
 		return res
 		
 	def __add__(self, arg):
@@ -227,8 +207,9 @@ class Vector(Matrix):
 	def __rtruediv__(self, arg):
 		if (not isinstance(arg, (int, float))):
 			raise ValueError("Error: Invalid arg")
-		if (any([[self.data[row][column] == 0 for column in range(len(self.data[row]))] for row in range(len(self.data))])):
-			raise ValueError("Error: division by zero")
+		control = [any([self.data[row][column] == 0 for column in range(len(self.data[row]))]) for row in range(len(self.data))]
+		if (any(control)):
+			raise ValueError("Error: division by zero") 
 		res = [[arg / self.data[row][column] for column in range(len(self.data[row]))] for row in range(len(self.data))]
 		return Vector(res)
 
@@ -300,3 +281,4 @@ class Vector(Matrix):
 		for line in self.data:
 			radical += str(line) + ' '
 		return radical[:-1] + end
+	
