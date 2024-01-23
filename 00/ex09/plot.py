@@ -1,21 +1,20 @@
-import numpy as np
-import matplotlib.pyplot as plt
+path = os.path.join(os.path.dirname(__file__), '..', 'ex04')
+sys.path.insert(1, path)
 from prediction import predict_
-from tools import is_row_vector
-
-def plot(x, y, theta):
-	plt.scatter(x, y, color="green")
-	plt.plot(x, predict_(x, theta), color="red")
-	plt.xlabel("X-axis")
-	plt.ylabel("Y-axis")
-	plt.show()
 
 def plot_with_loss(x, y, theta):
-	if (not is_row_vector(x) or not is_row_vector(y) or x.shape != y.shape or (not is_row_vector(theta) and theta.shape[0] == 2)):
-		return
-	plt.scatter(x, y, color="blue")
-	plt.plot(x, predict_(x, theta), color="red")
-	plt.vlines(x, y, predict_(x, theta), color='green', linestyle='--', label='Vertical Line')
-	plt.xlabel("X-axis")
-	plt.ylabel("Y-axis")
-	plt.show()
+    try:
+        _, axe = plt.subplots(1, 1, figsize = (15,8))
+        axe.scatter(x, y, c="royalblue")
+        ypred = predict_(x, theta)
+        axe.plot(x, ypred, '-', c='darkorange')
+
+        # Generator for the residual segments
+        g_dist = ([np.array([xi, xi]), np.array([yi, ypredi])] for xi, yi, ypredi in zip(x, y, ypred))
+
+        for residual_i in g_dist:
+            axe.plot(residual_i[0], residual_i[1], '--', c='red')
+        plt.show()
+    except:
+        print("Please check the dimension of the different arguments.", file=sys.stderr)
+        return None
