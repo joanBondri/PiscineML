@@ -1,38 +1,35 @@
 import numpy as np
 
-def is_vector(arr):
-    return isinstance(arr, np.ndarray) and arr.ndim == 1 or (arr.ndim == 2 and (arr.shape[0] == 1 or arr.shape[1] == 1))
-
-def is_row_vector(arr):
-	return isinstance(arr, np.ndarray) and arr.ndim == 1
-
-def is_column_vector(arr):
-	return isinstance(arr, np.ndarray) and arr.ndim == 2 and (arr.shape[0] == 1 or arr.shape[1] == 1)
-
-def transform_row_vector_to_column_vector(arr):
-	if not is_vector(arr):
-		return
-	newArr = arr
-	if newArr.ndim == 1 or newArr.shape[0] == 1:
-		return newArr.reshape(-1, 1)
-	return newArr
-
-def transform_column_vector_to_row_vector(arr):
-	if not is_vector(arr):
-		return
-	newArr = arr
-	if newArr.ndim == 2 and newArr.shape[0] == 1:
-		return newArr[0]
-	elif newArr.ndim == 2 and newArr.shape[0] != 1:
-		return newArr.reshape(1, -1)[0]
-	return newArr
-
-def add_intercept(arr : np.ndarray):
+def add_intercept(arr):
 	x = arr
-	lenX = len(x)
-	if (x.ndim > 2):
-		return
-	if (x.ndim == 1):
-		x = x.reshape(-1, 1)
+	if (not isinstance(x, np.ndarray) or len(x.shape) != 2 or len(x[0]) == 0):
+		return None
 	ones = np.full((x.shape[0], 1), 1)
 	return np.concatenate((ones, x), axis=1)
+
+def predict_(x, theta):
+	if (not isinstance(x, np.ndarray) or not isinstance(theta, np.ndarray) or
+	 len(x.shape) != 2 or x.shape[1] != 1 or theta.shape != (2, 1)):
+		return None
+	return add_intercept(x) @ theta
+
+def loss_elem_(y, y_hat):
+	try :
+		if (not isinstance(y, np.ndarray) or not isinstance(y_hat, np.ndarray) or
+		y.shape != y_hat.shape or len(y.shape) != 2 or y.shape[1] != 1):
+			return None
+		fy_hat = y_hat.astype(float)
+		fy = y.astype(float)
+		return (fy_hat - fy) ** 2
+	except:
+		return None
+
+
+def loss_(y, y_hat):
+	try :
+		loss = loss_elem_(y, y_hat)
+		if (loss is None):
+			return
+		return loss.sum() / (2 * len(y))
+	except:
+		return None

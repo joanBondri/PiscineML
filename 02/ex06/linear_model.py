@@ -8,6 +8,15 @@ from plot import plot
 from tools import predict_, loss_
 
 
+def show_plot(x, y, theta, one_x):
+    plot(x, y, theta, b_legend=True,
+        axes_labels=["Quantity of blue pill (in micrograms)",
+                    "Space driving score"],
+        data_labels={"raw": r"$S_{true}$(pills)",
+                    "prediction": r"$S_{predict}$(pills)"})
+    
+
+
 def print_predict(datafile="are_blue_pills_magics.csv"):
     try:
         data = pd.read_csv(datafile)
@@ -31,7 +40,7 @@ def print_predict(datafile="are_blue_pills_magics.csv"):
         mylr = MyLR(thetas, .05, 10000)
         print(f"mylr.fit_(x, y) = {mylr.fit_(x, y)}")
         # Plot
-        plot(x, y, mylr.thetas, b_legend=True,
+        plot(x, y, mylr.theta, b_legend=True,
              axes_labels=["Quantity of blue pill (in micrograms)",
                           "Space driving score"],
              data_labels={"raw": r"$S_{true}$(pills)",

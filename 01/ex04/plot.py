@@ -1,21 +1,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from prediction import predict_
-from tools import is_row_vector
 
-def plot(x, y, theta):
-	plt.scatter(x, y, color="green")
-	plt.plot(x, predict_(x, theta), color="red")
-	plt.xlabel("X-axis")
-	plt.ylabel("Y-axis")
-	plt.show()
-
-def plot_with_loss(x, y, theta):
-	if (not is_row_vector(x) or not is_row_vector(y) or x.shape != y.shape or (not is_row_vector(theta) and theta.shape[0] == 2)):
+def add_intercept(arr : np.ndarray):
+	x = arr
+	lenX = len(x)
+	if (x.ndim > 2):
 		return
-	plt.scatter(x, y, color="blue")
-	plt.plot(x, predict_(x, theta), color="red")
-	plt.vlines(x, y, predict_(x, theta), color='green', linestyle='--', label='Vertical Line')
-	plt.xlabel("X-axis")
-	plt.ylabel("Y-axis")
-	plt.show()
+	if (x.ndim == 1):
+		x = x.reshape(-1, 1)
+	ones = np.full((x.shape[0], 1), 1)
+	return np.concatenate((ones, x), axis=1)
+
+def predict_(x, theta):
+	if (not isinstance(x, np.ndarray) or not isinstance(theta, np.ndarray) or
+	theta.shape != (2, 1)):
+		return None
+	return np.sum(add_intercept(x) * theta.reshape(1, -1), axis=1)
+
+def plot(x, y, theta, b_legend = True,axes_labels = ["x", "y"], data_labels = {"raw":"raw", "prediction":"prediction"}):
+	try:
+		fig, axes = plt.subplots(1,1, figsize=(10,8))
+		axes.scatter(x, y, label = data_labels['raw'], c='#101214')
+		axes.plot(x, predict_(x, theta), label = data_labels['prediction'], c='#4287f5')
+		plt.legend()
+		plt.xlabel(axes_labels[0])
+		plt.ylabel(axes_labels[1])
+		if b_legend:
+			plt.legend()
+		plt.grid()
+		plt.show()
+	except:
+		return None

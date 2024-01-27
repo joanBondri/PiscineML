@@ -4,19 +4,21 @@ from tools import is_column_vector, add_intercept, transform_row_vector_to_colum
 from cost_function import cost_
 
 def calcule_derivative(theta, x, y):
-	prediction = predict_(theta, x)
-	x_intercept = add_intercept(x)
-	if prediction is None or x_intercept is None or not is_column_vector(y) or x.shape[0] != y.shape[0] :
-		return
-	diff = prediction - y
-	derivative_sum = np.sum((diff * x_intercept) / len(y), axis=0)
-	return transform_row_vector_to_column_vector(derivative_sum)
+	numberpred = len(x)
+	X = add_intercept(x)
+	res = (X.T @ (X @ theta - y)) / numberpred
+	return res
 
-def fit_(theta, x, y, alpha=.1, n_cycle=10000):
-	new_theta = theta
-	for i in range(n_cycle):
+def fit_(x, y, theta, alpha, max_iter):
+	if (not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray) or not isinstance(theta, np.ndarray) or
+	 len(x.shape) != 2 or x.shape[1] != 1 or y.shape != x.shape or theta.shape != (2, 1)):
+		return None
+	if not isinstance(alpha, float) or not isinstance(max_iter, int):
+		return None
+	new_theta = theta.astype(np.float64)
+	for i in range(max_iter):
 		res = calcule_derivative(new_theta, x, y)
 		if (res is None):
-			return
+			return None
 		new_theta -= alpha * res
 	return new_theta

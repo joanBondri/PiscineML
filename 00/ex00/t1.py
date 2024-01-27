@@ -56,7 +56,7 @@ def test_matrix():
     assert (m1 + m1).data == [[4, 6, 8, 10, 12]]
 
     # Test division
-    assert (2 / v1).data == Vector([[2, 1, 2/3, 1/2, 2/5]])
+    assert (2 / v1).data == [[2, 1, 2/3, 1/2, 2/5]]
 
     # Test empty matrix
     m2 = Matrix((2, 3))
